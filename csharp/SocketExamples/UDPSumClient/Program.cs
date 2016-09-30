@@ -26,8 +26,10 @@ namespace UDPSumClient
             IPEndPoint ep = new IPEndPoint(address, port);
             s.SendTo(sendbuf, ep);
             Console.WriteLine("Problem sent to the server");
+
             byte[] receivebuf = new byte[100];
             s.Receive(receivebuf);
+
             string receive = Encoding.ASCII.GetString(receivebuf);
             Console.WriteLine("Result:");
             Console.WriteLine(receive.Trim());
