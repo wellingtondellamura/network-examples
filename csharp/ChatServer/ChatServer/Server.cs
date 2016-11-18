@@ -56,11 +56,11 @@ namespace ChatServer
             string clientName = null;
             while (running)
             {
-                string response = null;
+                string response = null;                
                 byte[] clientData = new byte[1024];
                 int size = socket.Receive(clientData);
-                string strMessage = Encoding.ASCII.GetString(clientData);
-                string[] msg = strMessage.Split(';');
+                string strMessage = Encoding.ASCII.GetString(clientData);            
+                string[] msg = strMessage.Substring(0, size).Split(';');
                 if (msg.Length != 2)
                 {
                     break;
@@ -70,22 +70,30 @@ namespace ChatServer
                     clientName = msg[1];
                     Clients.Add(clientName);
                     response = "1";
+                    Console.WriteLine("Register " + clientName);
                 }
-                else if (msg[1] == "msg")
+                else if (msg[0] == "msg")
                 {
-                    Messages.Add(new Message(clientName, msg[1]));
+                    Messages.Add(new Message(clientName, msg[1], DateTime.Now));
                     response = "1";
-                }else if (msg[2] == "lst")
+                    Console.WriteLine("message from " + clientName + "::" + msg[1]);
+                }
+                else if (msg[0] == "lst")
                 {
                     response = generateMessageList();
-                }else
+                    Console.WriteLine("List messages from " + clientName);
+                }
+                else
                 {
                     response = "0";
+                    Console.WriteLine("Request error of " + clientName);
                 }
-                byte[] responseData = Encoding.ASCII.GetBytes(response);
-                socket.Send(responseData);
-            }
+                byte[] responseData = Encoding.ASCII.GetBytes(response+"\n");
+                socket.Send(responseData, SocketFlags.Partial);
+            }            
+            Console.WriteLine("Disconnected: " + socket.RemoteEndPoint.ToString());
             socket.Disconnect(false);
+            
         }
 
         private string generateMessageList()

@@ -12,7 +12,7 @@ namespace ChatServer
         public string Client { get; set; }
         public string Text { get; set; }
 
-        public Message(string client, string text, DateTime datetime = new DateTime())
+        public Message(string client, string text, DateTime datetime)
         {
             this.Client = client;
             this.Text = text;
